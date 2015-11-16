@@ -1,4 +1,4 @@
-# Amorite Playcanvas Model Animation Converter
+# Amorite Playcanvas Animation Converter
 
 ## Intro
 
@@ -8,9 +8,9 @@ Use any DCC tools to export your animated models as FBX, then use this Amorite t
 
 ## Usage
 
-python amorite_ps_anim_converter.py [input_fbx_anim] [rootNode] [rootScale] [rootRotation] [output_json_anim]
+python **amorite_ps_anim_converter.py** [input_fbx_anim] [rootNode] [rootScale] [rootRotation] [output_json_anim]
 
-Example: python amorite_ps_anim_converter.py Playbot_run.fbx "PB" 0.01 "[-90,-90,0]" a1.json
+Example: python amorite_ps_anim_converter.py Playbot_run.fbx "PB" a1.json -s 0.01
 
 ##Options
 
