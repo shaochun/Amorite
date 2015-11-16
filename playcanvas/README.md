@@ -1,18 +1,18 @@
-# Amorite Playcanvas Animation Converter
+## Amorite Offline Model Animation Converter for PlayCanvas
 
-## Intro
+### Intro
 
-This is a python tool converting FBX files to Playcanvas Animation Json files, providing a simple way for the animation conversion offline.
+This is a python tool converting FBX files to PlayCanvas Animation Json files, providing a simple way for the animation conversion offline.
 
-Use any DCC tools to export your animated models as FBX, then use this Amorite tool to convert it to Playcanvas Animation Json format.
+Use any DCC tools to export your animated models as FBX, then use this Amorite tool to convert it to PlayCanvas Animation Json format.
 
-## Usage
+### Usage
 
 python **amorite_ps_anim_converter.py** [input_fbx_anim] [rootNode] [rootScale] [rootRotation] [output_json_anim]
 
 Example: python amorite_ps_anim_converter.py Playbot_run.fbx "PB" a1.json -s 0.01
 
-##Options
+### Options
 
 - -s, -scale ---- this scales up or shrinks down the animation. Default is 1
 
@@ -22,13 +22,13 @@ Example: python amorite_ps_anim_converter.py Playbot_run.fbx "PB" a1.json -s 0.0
 
 - -p, -pretty ---- pretty formatted Json output.
 
-## Installation
+### Installation
 
 1. install **Python FBX SDK 2015**. Make sure you copy **fbx.pyd** & **FbxCommon.py** from the installed folder to **%python_path%/Lib/site-packages**.
 
 2. Python 2.7.x
 
-## Constraints
+### Constraints
 
 1. Animation fps is bound to 30fps.
 
