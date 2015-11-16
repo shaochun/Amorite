@@ -13,13 +13,13 @@ python amorite_ps_anim_converter.py [input_fbx_anim] [rootNode] [rootScale] [roo
 Example: python amorite_ps_anim_converter.py Playbot_run.fbx "PB" 0.01 "[-90,-90,0]" a1.json
 
 ##Options
-        parser.add_option('-s', '--scale',      action='store', dest='rootScale',       help="setup the root joint scale",              default=1)
-
-        parser.add_option('-r', '--rotation',   action='store', dest='rootRotation',    help="setup the root joint rotation",           default="[-90,-90,0]")
 
 -s, -scale: this scales up or shrinks down the animation. Default is 1
+
 -r, -rotation: this provides an easy way to quick rotate the animation, for example "[0, 90, -90]" means rotate the animtion 90 and -90 degrees along the Y and Z axis respectively. Default is [-90,-90,0].
+
 -d, -dcc: supports three types of coordinate system: mayaY , mayaZ , and max. Default is mayaY.
+
 -p, -pretty: pretty formatted Json output.
 
 ## Installation
