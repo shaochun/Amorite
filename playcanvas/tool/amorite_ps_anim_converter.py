@@ -39,9 +39,9 @@ class Key():
         self.r = [0,0,0]
 
 #=====================================================================
-# HOT
+# MAIN CLASS
 #=====================================================================
-class PlayCanvas_Anim_Converter:
+class Amorite_PlayCanvas_Animation_Converter:
 
     def __init__(self):
 
@@ -50,7 +50,7 @@ class PlayCanvas_Anim_Converter:
 
         self.rootNodeName = ""
         self.rootScale = 0
-        self.rootRotate = [-90,-90,0]
+        self.rootRotation = [-90,-90,0]
 
         self.sceneStatic = None
 
@@ -65,11 +65,14 @@ class PlayCanvas_Anim_Converter:
     # json output
     # ######################################################################################
     def writeJsonData(self, data):
-        jsonData = json.dumps(data, sort_keys=False, default=lambda o: o.__dict__)
+        if self.options.pretty:
+            jsonData = json.dumps(data, sort_keys=False, indent=4, separators=(',', ': '), default=lambda o: o.__dict__)
+        else:
+            jsonData = json.dumps(data, sort_keys=False, default=lambda o: o.__dict__)
 
-        print(jsonData)
+        #print(jsonData)
 
-        writefile = open(self.args[4], 'w')
+        writefile = open(self.args[2], 'w')
         writefile.write(jsonData)
         writefile.close()
 
@@ -79,13 +82,17 @@ class PlayCanvas_Anim_Converter:
         
         r = Root()
         
-        a = Animation()
-        a.name = self.stackName
+        a          = Animation()
+        a.name     = self.stackName
         a.duration = self.duration
-        a.nodes = _nodes
+        a.nodes    = _nodes
 
         r.animation = a
         self.writeJsonData(r)
+
+        print("\nfile: %s written sucessfully." % self.args[2])
+
+
 
     # ######################################################################################
     # handle skeleton hierarchy
@@ -139,40 +146,50 @@ class PlayCanvas_Anim_Converter:
     # ######################################################################################
     def loadFbxScene(self):
 
-        sdk_manager, self.scene       = InitializeSdkObjects()
-        sdk_manager, self.sceneStatic = InitializeSdkObjects()
+        sdk_manager, self.scene = InitializeSdkObjects()
         fbxConverter = FbxGeometryConverter(sdk_manager)
 
-        print(self.scene)
+        #print(self.scene)
 
         #----------------------------------------------------------
         """
         args[0] : source_anim_fbx
         args[1] : rootNode
-        args[2] : rootScale : float
-        args[3] : rootRotate : [90,90,90]
-        args[4] : export_anim_json
+        args[2] : export_anim_json
         """
-        if len(self.args) >= 4:   #at least 2, input_fbxfile, input_pose_file, ,rootNodeName, output_json_file
+        if len(self.args) >= 3:   #at least 3, input_fbxfile, rootNodeName, output_json_file
             self.rootNodeName = self.args[1]
             if self.rootNodeName == "": print("RootNodeName is null.")
 
-            self.rootScale  = float(self.args[2])
-            self.rootRotate = eval(self.args[3])
+            self.rootScale =    float(self.options.rootScale)
+            self.rootRotation = eval(self.options.rootRotation)
 
             print("\nLoading file: %s" % self.args[0])
             result = LoadScene(sdk_manager, self.scene, self.args[0])
-            axis_system = FbxAxisSystem.MayaYUp
+
+            #axis_system = FbxAxisSystem(FbxAxisSystem.eYAxis, FbxAxisSystem.eParityOdd , FbxAxisSystem.eLeftHanded)
+            axis_system = None
+            if self.options.dcc.lower() == "mayay":
+                axis_system = FbxAxisSystem.MayaYUp
+            elif self.options.dcc.lower() == "mayaz":
+                axis_system = FbxAxisSystem.MayaZUp
+            elif self.options.dcc.lower() == "max":
+                axis_system = FbxAxisSystem.Max
+            else:
+                axis_system = FbxAxisSystem.MayaYUp
+                
+
             axis_system.ConvertScene(self.scene)
             
         else:
             result = False
-            print("\nUsage: ps_anim_converter [source_anim.fbx] [rootNode] [rootScale] [rootRotation] [output_anim.js]\n")
+            print("\nUsage: amorite_ps_anim_converter [source_anim.fbx] [rootNode] [output_anim.js] [options]\n")
+            quit()
 
         #----------------------------------------------------------
-
         if not result:
             print("\nAn error occurred while loading the file...")
+            quit()
         else:
 
             print("FbxScene loaded.")
@@ -209,7 +226,7 @@ class PlayCanvas_Anim_Converter:
             if (node.name == self.rootNodeName): 
                 node.defaults = { 
                     "s": [self.rootScale, self.rootScale, self.rootScale],
-                    "r": self.rootRotate }
+                    "r": self.rootRotation }
             node.keys = []
 
             Tcurve = boneNode.LclTranslation.GetCurve(layer)
@@ -289,8 +306,17 @@ class PlayCanvas_Anim_Converter:
     # ######################################################################################
     def userInputInit(self):
         
-        usage = "Usage: %prog [source_anim.fbx] [rootNode] [rootScale] [rootRotation] [output_anim.js]"
+        #usage = "Usage: %prog [source_anim.fbx] [rootNode] [rootScale] [rootRotation] [output_anim.js] [options]"
+        usage = "Usage: %prog [source_anim.fbx] [rootNode] [output_anim.js] [options]"
         parser = OptionParser(usage=usage)
+
+        parser.add_option('-s', '--scale',      action='store', dest='rootScale',       help="setup the root joint scale",              default=1)
+        parser.add_option('-r', '--rotation',   action='store', dest='rootRotation',    help="setup the root joint rotation",           default="[-90,-90,0]")
+        parser.add_option('-d', '--dcc',        action='store', dest='dcc',             help="setup dcc coordinate system",             default="mayaY")
+        #parser.add_option('-a', '--upaxis',     action='store', dest='upAxis',          help="setup Y or Z-axis up-vector",             default="Y")
+        #parser.add_option('-c', '--coord',      action='store', dest='coord',           help="left or right-handed coordinate system",  default="right")
+        parser.add_option('-p', '--pretty',     action='store_false', dest='pretty',    help="pretty format json output",               default=True)
+
         (self.options, self.args) = parser.parse_args()
 
 
@@ -318,7 +344,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     #----------------------------------------------------------
-    converter = PlayCanvas_Anim_Converter()
+    converter = Amorite_PlayCanvas_Animation_Converter()
     converter.userInputInit()
 
     #----------------------------------------------------------
