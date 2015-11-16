@@ -8,4 +8,4 @@ playcanvas/tool/amorite_ps_anim_exporter.py: A FBX -> Playcanvas Json Model Anim
 
 ## License
 
-All tools are released under the MIT license.
+All tools are released under the [MIT](https://opensource.org/licenses/MIT) license.
