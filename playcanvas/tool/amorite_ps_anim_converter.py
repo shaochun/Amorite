@@ -64,6 +64,7 @@ class Amorite_PlayCanvas_Animation_Converter:
     # ######################################################################################
     # json output
     # ######################################################################################
+
     def writeJsonData(self, data):
         if self.options.pretty:
             jsonData = json.dumps(data, sort_keys=False, indent=4, separators=(',', ': '), default=lambda o: o.__dict__)
@@ -79,9 +80,9 @@ class Amorite_PlayCanvas_Animation_Converter:
 
     def writeIt(self):
         _nodes = self.loadAnimation() #this goes first to setup name and duration
-        
+
         r = Root()
-        
+
         a          = Animation()
         a.name     = self.stackName
         a.duration = self.duration
@@ -90,7 +91,7 @@ class Amorite_PlayCanvas_Animation_Converter:
         r.animation = a
         self.writeJsonData(r)
 
-        print("\nfile: %s written sucessfully." % self.args[2])
+        print("\nWriting file: %s written sucessfully." % self.args[2])
 
 
 
@@ -177,10 +178,10 @@ class Amorite_PlayCanvas_Animation_Converter:
                 axis_system = FbxAxisSystem.Max
             else:
                 axis_system = FbxAxisSystem.MayaYUp
-                
+
 
             axis_system.ConvertScene(self.scene)
-            
+
         else:
             result = False
             print("\nUsage: amorite_ps_anim_converter [source_anim.fbx] [rootNode] [output_anim.js] [options]\n")
@@ -195,7 +196,7 @@ class Amorite_PlayCanvas_Animation_Converter:
             print("FbxScene loaded.")
 
     # ######################################################################################
-    # handle animation 
+    # handle animation
     # ######################################################################################
     def loadAnimation(self):
 
@@ -223,8 +224,8 @@ class Amorite_PlayCanvas_Animation_Converter:
 
             boneName = boneNode.GetName()
             node.name = boneName
-            if (node.name == self.rootNodeName): 
-                node.defaults = { 
+            if (node.name == self.rootNodeName):
+                node.defaults = {
                     "s": [self.rootScale, self.rootScale, self.rootScale],
                     "r": self.rootRotation }
             node.keys = []
@@ -234,7 +235,7 @@ class Amorite_PlayCanvas_Animation_Converter:
             Scurve = boneNode.LclScaling.GetCurve(layer)
 
             #S/R/T curves' keycount has to be same
-            numKeys = Scurve.KeyGetCount()  
+            numKeys = Rcurve.KeyGetCount()
             for keyIndex in xrange(0, numKeys, 3):
 
                 frameSeconds = 0
@@ -254,7 +255,7 @@ class Amorite_PlayCanvas_Animation_Converter:
                         tx = position[0] * self.rootScale; ty = position[1] * self.rootScale; tz = position[2] * self.rootScale
                     else:
                         tx = position[0]; ty = position[1]; tz = position[2]
-                 
+
                     frameSeconds = frameTime.GetSecondDouble()
 
                 key = Key()
@@ -275,9 +276,9 @@ class Amorite_PlayCanvas_Animation_Converter:
 
                 #get the last key
                 if Rcurve != None:
-                    frameTime = Scurve.KeyGetTime(numKeys-1)    
-                    rotation = boneNode.EvaluateLocalRotation(frameTime)    
-                    rx = rotation[0]; ry = rotation[1]; rz = rotation[2]    
+                    frameTime = Scurve.KeyGetTime(numKeys-1)
+                    rotation = boneNode.EvaluateLocalRotation(frameTime)
+                    rx = rotation[0]; ry = rotation[1]; rz = rotation[2]
 
                 if Tcurve != None:
                     frameTime = Scurve.KeyGetTime(numKeys-1)
@@ -289,7 +290,7 @@ class Amorite_PlayCanvas_Animation_Converter:
 
                     frameSeconds = frameTime.GetSecondDouble()
 
-                #append the last key        
+                #append the last key
                 key = Key()
                 key.t = frameSeconds
                 key.p = [tx,ty,tz]
@@ -297,15 +298,15 @@ class Amorite_PlayCanvas_Animation_Converter:
 
                 node.keys.append(key)
 
-            nodes.append(node)    
+            nodes.append(node)
 
-        return nodes 
+        return nodes
 
     # ######################################################################################
     # handle user inputs
     # ######################################################################################
     def userInputInit(self):
-        
+
         #usage = "Usage: %prog [source_anim.fbx] [rootNode] [rootScale] [rootRotation] [output_anim.js] [options]"
         usage = "Usage: %prog [source_anim.fbx] [rootNode] [output_anim.js] [options]"
         parser = OptionParser(usage=usage)
