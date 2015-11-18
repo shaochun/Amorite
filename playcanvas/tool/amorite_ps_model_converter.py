@@ -49,11 +49,6 @@ class Node():
         self.rotation = []
         self.scale    = []
 
-class Key():
-    def __init__(self):
-        self.t = [0,0,0]
-        self.p = [0,0,0]
-        self.r = [0,0,0]
 
 #=====================================================================
 # MAIN CLASS
@@ -324,31 +319,35 @@ class Amorite_PlayCanvas_Model_Converter:
 
                 cluster.GetTransformMatrix(transformMatrix);            #The transformation of the mesh at binding time
                 cluster.GetTransformLinkMatrix(transformLinkMatrix);    #The transformation of the cluster(bone) at binding time from bone space to world space
-                worldBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform
-                #x worldBindposeInverseMatrix = self.ToggleYZMatrix(worldBindposeInverseMatrix)
+                wbi = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform
+                #x wbi = self.ToggleYZMatrix(wbi)
 
                 #(row, column)
-                m00 = worldBindposeInverseMatrix.Get(0,0)  #
-                m10 = worldBindposeInverseMatrix.Get(1,0)  #
-                m20 = worldBindposeInverseMatrix.Get(2,0)  #
-                m30 = worldBindposeInverseMatrix.Get(3,0)  #
+                m00 = wbi.Get(0,0)  #
+                m10 = wbi.Get(1,0)  #
+                m20 = wbi.Get(2,0)  #
+                m30 = wbi.Get(3,0)  #
                 
-                m01 = worldBindposeInverseMatrix.Get(0,1)  #  #
-                m11 = worldBindposeInverseMatrix.Get(1,1)  #  #
-                m21 = worldBindposeInverseMatrix.Get(2,1)  #  #
-                m31 = worldBindposeInverseMatrix.Get(3,1)  #  #
+                m01 = wbi.Get(0,1)  #  #
+                m11 = wbi.Get(1,1)  #  #
+                m21 = wbi.Get(2,1)  #  #
+                m31 = wbi.Get(3,1)  #  #
                 
-                m02 = worldBindposeInverseMatrix.Get(0,2)  #  #  #
-                m12 = worldBindposeInverseMatrix.Get(1,2)  #  #  #
-                m22 = worldBindposeInverseMatrix.Get(2,2)  #  #  #
-                m32 = worldBindposeInverseMatrix.Get(3,2)  #  #  #
+                m02 = wbi.Get(0,2)  #  #  #
+                m12 = wbi.Get(1,2)  #  #  #
+                m22 = wbi.Get(2,2)  #  #  #
+                m32 = wbi.Get(3,2)  #  #  #
                 
-                m03 = worldBindposeInverseMatrix.Get(0,3)  #  #  #  #
-                m13 = worldBindposeInverseMatrix.Get(1,3)  #  #  #  #
-                m23 = worldBindposeInverseMatrix.Get(2,3)  #  #  #  #
-                m33 = worldBindposeInverseMatrix.Get(3,3)  #  #  #  #
+                m03 = wbi.Get(0,3)  #  #  #  #
+                m13 = wbi.Get(1,3)  #  #  #  #
+                m23 = wbi.Get(2,3)  #  #  #  #
+                m33 = wbi.Get(3,3)  #  #  #  #
 
-                _skin.inverseBindMatrices.append( [m00,m10,m20,m30, m01,m11,m21,m31, m02,m12,m22,m32, m03,m13,m23,m33] )
+                # !! check items order
+                _skin.inverseBindMatrices.append( [ m00,m10,m20,m30, 
+                                                    m01,m11,m21,m31, 
+                                                    m02,m12,m22,m32, 
+                                                    m03,m13,m23,m33] )
                 _skin.boneNames.append(boneName)
 
             _skins.append(_skin)
