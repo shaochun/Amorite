@@ -10,6 +10,25 @@
 import json
 
 #=====================================================================
+# JSON FLOAT DIGITS SWALLOWER
+#=====================================================================
+#http://stackoverflow.com/questions/1447287/format-floats-with-standard-json-module
+class PrettyFloat(float):
+    def __repr__(self):
+        return '%.8g' % self
+
+def pretty_floats(obj):
+    if isinstance(obj, float):
+        return PrettyFloat(obj)
+    elif isinstance(obj, dict):
+        return dict((k, pretty_floats(v)) for k, v in obj.items())
+    elif isinstance(obj, (list, tuple)):
+        return map(pretty_floats, obj)             
+    return obj
+
+#print simplejson.dumps(pretty_floats([23.67, 23.97, 23.87]))
+
+#=====================================================================
 # JSON OUTPUT DATA STRUCTURE
 #=====================================================================
 class Skin:
@@ -35,10 +54,9 @@ class Model():
     def __init__(self):
         self.version  = 2
         self.name     = ""
-        #self.duration = -3.0
         self.nodes = [] #list of Node
         #self.skins_and_deformers = [] #list of Skin_and_deformers if deformers>1
-        #self.skins = [] #list of Skin
+        self.skins = [] #list of Skin
 
 
 class Node():
@@ -97,6 +115,7 @@ class Amorite_PlayCanvas_Model_Converter:
         print("bone not found.")
         quit()
 
+    #this method is NOT using for now
     def ToggleYZMatrix(self, input):
 
         #output = input
@@ -120,7 +139,8 @@ class Amorite_PlayCanvas_Model_Converter:
         if self.options.pretty:
             jsonData = json.dumps(data, sort_keys=False, indent=4, separators=(',', ': '), default=lambda o: o.__dict__)
         else:
-            jsonData = json.dumps(data, sort_keys=False, default=lambda o: o.__dict__)
+            #jsonData = json.dumps(data, sort_keys=False, default=lambda o: o.__dict__)
+            jsonData = json.dumps(pretty_floats(data), sort_keys=False, default=lambda o: o.__dict__)
 
         #print(jsonData)
 
