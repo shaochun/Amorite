@@ -14,7 +14,7 @@ import json
 #=====================================================================
 class Skin:
     def __init__(self):
-        self.mesh_node_name = "" #should be 'name of the geometry node' 
+        self.mesh_node_name = "" #should be 'name of the geometry node'
                                  #not using in output json file, just for annotation
         self.inverseBindMatrices = [] #item is a list of 16 floats (matrix of bone)
         self.boneNames = [] #item is a string (bonename)
@@ -98,15 +98,15 @@ class Amorite_PlayCanvas_Model_Converter:
         quit()
 
     def ToggleYZMatrix(self, input):
-        
+
         #output = input
 
         translation = input.GetT();
         rotation = input.GetR();
-        
+
         translation.Set(translation[0], translation[1], translation[2]); #This negate Z of Translation Component of the matrix
         rotation.Set(rotation[0], rotation[1], rotation[2]);             #This negate X,Y of Rotation Component of the matrix
-    
+
         #These 2 lines finally set "input" to the eventual converted result
         input.SetT(translation);
         input.SetR(rotation);
@@ -132,7 +132,7 @@ class Amorite_PlayCanvas_Model_Converter:
     def writeIt(self):
         m       = Model()
         m.name  = self.args[0][:-4] # PlayBot(.fbx) remove suffix
-        
+
         _nodes  = self.processSkeletonTransforms()
         m.nodes = _nodes
 
@@ -258,10 +258,10 @@ class Amorite_PlayCanvas_Model_Converter:
         # Destroy all objects created by the FBX SDK.
         #sdk_manager.Destroy()
 
-    
+
     # ######################################################################################
     # handle geometry (this is a generator)
-    # ######################################################################################    
+    # ######################################################################################
     def processGeometry(self, node, model):
         if node.GetNodeAttribute():
             if node.GetNodeAttribute().GetAttributeType() == FbxNodeAttribute.eMesh:
@@ -306,60 +306,79 @@ class Amorite_PlayCanvas_Model_Converter:
                 boneName = cluster.GetLink().GetName()
                 boneIndex = self.FindBoneIndexByName(boneName)
 
-                transformMatrix             = FbxAMatrix()                     
-                transformLinkMatrix         = FbxAMatrix()                 
-                globalBindposeInverseMatrix = FbxAMatrix() 
+                transformMatrix             = FbxAMatrix()
+                transformLinkMatrix         = FbxAMatrix()
+                globalBindposeInverseMatrix = FbxAMatrix()
 
                 #- toggleYZMatrix              = FbxAMatrix(FbxVector4(1.0, 0.0, 0.0, 0.0),  FbxVector4(0.0, 0.0, 1.0, 0.0),  FbxVector4(0.0, 1.0, 0.0, 0.0))
-                #- toggleYZMatrix              = FbxMatrix();
-                #- toggleYZMatrix.Set(0,0,1.0);
-                #- toggleYZMatrix.Set(1,2,1.0); toggleYZMatrix.Set(1,1,0);
-                #- toggleYZMatrix.Set(2,1,1.0); toggleYZMatrix.Set(2,2,0);
-                #- toggleYZMatrix.Set(3,3,1.0);
+                toggleYZMatrix              = FbxMatrix();
+                toggleYZMatrix.Set(0,0,1.0);
+                toggleYZMatrix.Set(1,2,1.0); toggleYZMatrix.Set(1,1,0);
+                toggleYZMatrix.Set(2,1,-1.0); toggleYZMatrix.Set(2,2,0);
+                toggleYZMatrix.Set(3,3,1.0);
 
                 cluster.GetTransformMatrix(transformMatrix);            #The transformation of the mesh at binding time
                 cluster.GetTransformLinkMatrix(transformLinkMatrix);    #The transformation of the cluster(bone) at binding time from bone space to world space
                 wbi = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform
-                #x wbi = self.ToggleYZMatrix(wbi)
 
                 #(row, column)
+                m00 = wbi.Get(0,0); m01 = wbi.Get(0,1); m02 = wbi.Get(0,2); m03 = wbi.Get(0,3)
+                m10 = wbi.Get(1,0); m11 = wbi.Get(1,1); m12 = wbi.Get(1,2); m13 = wbi.Get(1,3)
+                m20 = wbi.Get(2,0); m21 = wbi.Get(2,1); m22 = wbi.Get(2,2); m23 = wbi.Get(2,3)
+                m30 = wbi.Get(3,0); m31 = wbi.Get(3,1); m32 = wbi.Get(3,2); m33 = wbi.Get(3,3)
+                del wbi
+                
+                wbi = FbxMatrix()
+                wbi.Set(0,0, m00);  wbi.Set(0,1, m01);  wbi.Set(0,2, m02);  wbi.Set(0,3, m03)
+                wbi.Set(1,0, m10);  wbi.Set(1,1, m11);  wbi.Set(1,2, m12);  wbi.Set(1,3, m13)
+                wbi.Set(2,0, m20);  wbi.Set(2,1, m21);  wbi.Set(2,2, m22);  wbi.Set(2,3, m23)
+                wbi.Set(3,0, m30);  wbi.Set(3,1, m31);  wbi.Set(3,2, m32);  wbi.Set(3,3, m33)
+
+                wbi = wbi * toggleYZMatrix
+
                 m00 = wbi.Get(0,0)  #
                 m10 = wbi.Get(1,0)  #
                 m20 = wbi.Get(2,0)  #
                 m30 = wbi.Get(3,0)  #
-                
+
                 m01 = wbi.Get(0,1)  #  #
                 m11 = wbi.Get(1,1)  #  #
                 m21 = wbi.Get(2,1)  #  #
                 m31 = wbi.Get(3,1)  #  #
-                
+
                 m02 = wbi.Get(0,2)  #  #  #
                 m12 = wbi.Get(1,2)  #  #  #
                 m22 = wbi.Get(2,2)  #  #  #
                 m32 = wbi.Get(3,2)  #  #  #
-                
+
                 m03 = wbi.Get(0,3)  #  #  #  #
                 m13 = wbi.Get(1,3)  #  #  #  #
                 m23 = wbi.Get(2,3)  #  #  #  #
                 m33 = wbi.Get(3,3)  #  #  #  #
 
+
                 # !! check items order
-                _skin.inverseBindMatrices.append( [ m00,m10,m20,m30, 
-                                                    m01,m11,m21,m31, 
-                                                    m02,m12,m22,m32, 
-                                                    m03,m13,m23,m33] )
+                #_skin.inverseBindMatrices.append( [ m00,m10,m20,m30,
+                #                                    m01,m11,m21,m31,
+                #                                    m02,m12,m22,m32,
+                #                                    m03,m13,m23,m33] )
+                _skin.inverseBindMatrices.append( [ m00,m01,m02,m03,
+                                                    m10,m11,m12,m13,
+                                                    m20,m21,m22,m23,
+                                                    m30,m31,m32,m33] )
+                
                 _skin.boneNames.append(boneName)
 
             _skins.append(_skin)
             print("bp")
 
-            #----------------------------------------------------  
-            if numOfDeformers > 1: 
+            #----------------------------------------------------
+            if numOfDeformers > 1:
                 print("numOfDeformers > 1.")
                 #model.skins_and_deformers.append(_skins)
                 quit()
             else:
-                model.skins = _skins    
+                model.skins = _skins
 
         print("bp")
 
@@ -376,7 +395,7 @@ class Amorite_PlayCanvas_Model_Converter:
 
             boneName = boneNode.GetName()
             node.name = boneName
-            
+
             #if (node.name == self.rootNodeName):
             #    node.defaults = {
             #        "s": [self.rootScale, self.rootScale, self.rootScale],
@@ -384,7 +403,7 @@ class Amorite_PlayCanvas_Model_Converter:
 
             position = boneNode.LclTranslation.Get();
             rotation = boneNode.LclRotation.Get();
-            scale    = boneNode.LclScaling.Get();         
+            scale    = boneNode.LclScaling.Get();
 
             tx = position[0]; ty = position[1]; tz = position[2]
             rx = rotation[0]; ry = rotation[1]; rz = rotation[2]
