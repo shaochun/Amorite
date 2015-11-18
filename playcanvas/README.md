@@ -2,7 +2,7 @@
 
 ### Intro
 
-This is a python tool converting FBX files to PlayCanvas Animation Json files offline. No more file upload-to-server-conversion work is needed, all in your local machine.
+This is a python tool converting FBX files to PlayCanvas Animation Json files offline. No more file upload-to-server-conversion work needed, all in your local machine.
 
 Use any DCC tools to export your animated models as FBX, then use this Amorite tool to convert it to PlayCanvas Animation Json format.
 
