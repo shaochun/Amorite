@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 #author @shaochun <·> http://github.com/shaochun
 
-import json
-
 #=====================================================================
 # JSON OUTPUT DATA STRUCTURE
 #=====================================================================
@@ -327,6 +325,7 @@ class Amorite_PlayCanvas_Animation_Converter:
 # ######################################################################################
 if __name__ == "__main__":
     from optparse import OptionParser
+    import json
 
     try:
         from FbxCommon import *
