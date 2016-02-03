@@ -1,6 +1,6 @@
 # Amorite
 
-A toolset for HTML5/Webgl 3D Engines.
+Toolset for HTML5/Webgl 3D Engines.
 
 ## Tools
 
