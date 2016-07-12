@@ -2,7 +2,7 @@
 
 ### Intro
 
-[![ScreenShot](https://raw.githubusercontent.com/shaochun/Amorite/master/playcanvas/pb_play.png)](https://vimeo.com/174299868)
+[![ScreenShot](https://raw.githubusercontent.com/shaochun/Amorite/master/playcanvas/pb_play.png)](https://vimeo.com/174299868/c4402395d1)
 
 This is a python tool converting FBX files to PlayCanvas Animation Json files offline. No more file upload-to-server-conversion work needed, all in your local machine.
 
