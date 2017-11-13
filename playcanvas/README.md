@@ -1,6 +1,6 @@
 ## Amorite Offline Model Animation Converter for PlayCanvas
 
-[![ScreenShot](https://raw.githubusercontent.com/shaochun/Amorite/master/playcanvas/pb_play.png)](https://vimeo.com/174299868/c4402395d1)
+[![ScreenShot](https://raw.githubusercontent.com/shaochun/Amorite/master/playcanvas/pb_play.png)](https://vimeo.com/174299868) 
 
 ### Intro
 
