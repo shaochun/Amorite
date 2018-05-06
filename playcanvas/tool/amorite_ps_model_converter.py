@@ -3,8 +3,19 @@
 
 """
 ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉
-▉     STILL WORKING IN PROCESS, DON'T USE ME                           ▉
+▉     STILL WORKING IN PROCESS, DON'T USE ME                     ▉
 ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉
+"""
+
+""" TODO
+defaults
+embeds
+geometries
+materials
+metadata
+objects
+textures
+transform
 """
 
 import json
